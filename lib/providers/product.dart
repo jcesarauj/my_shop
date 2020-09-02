@@ -1,14 +1,23 @@
 import 'package:flutter/material.dart';
-import 'package:shop/data/dummy-data.dart';
-import 'package:shop/models/product.dart';
 
-class Products with ChangeNotifier {
-  List<Product> _items = DUMMY_PRODUCTS;
+class Product with ChangeNotifier {
+  final String id;
+  final String title;
+  final String description;
+  final double price;
+  final String imageUrl;
+  bool isFavorite;
 
-  List<Product> get items => [..._items];
+  Product(
+      {@required this.id,
+      @required this.title,
+      @required this.description,
+      @required this.price,
+      @required this.imageUrl,
+      this.isFavorite = false});
 
-  void AddProduct(Product product) {
-    _items.add(product);
+  void toggleFavorite() {
+    isFavorite = !isFavorite;
     notifyListeners();
   }
 }

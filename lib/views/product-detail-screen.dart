@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:shop/models/product.dart';
-import 'package:shop/providers/counter-provider.dart';
+import 'package:shop/providers/product.dart';
 
 class ProductDetailScreen extends StatelessWidget {
   ProductDetailScreen();
@@ -14,13 +13,7 @@ class ProductDetailScreen extends StatelessWidget {
         title: Text(_product.title),
       ),
       body: Column(
-        children: <Widget>[
-          RaisedButton(
-              child: Text("+"),
-              onPressed: () {
-                print(CounterProvider.of(context));
-              })
-        ],
+        children: <Widget>[RaisedButton(child: Text("+"), onPressed: () {})],
       ),
     );
   }
