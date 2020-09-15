@@ -45,7 +45,7 @@ class _ProductsOverviewScreenState extends State<ProductsOverviewScreen> {
           ),
           Consumer<Cart>(
             builder: (ctx, cart, _) => Badge(
-              value: cart.itemCount.toString(),
+              value: cart.itemsCount.toString(),
               child: IconButton(
                 icon: Icon(Icons.shopping_cart),
                 onPressed: () {
