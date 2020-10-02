@@ -52,7 +52,7 @@ class ProductGridItem extends StatelessWidget {
                   },
                 ),
               ));
-              cart.AddItem(product);
+              cart.addItem(product);
             },
             color: Theme.of(context).accentColor,
           ),

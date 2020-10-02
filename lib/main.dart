@@ -40,7 +40,7 @@ class MyApp extends StatelessWidget {
           AppRoutes.CART: (ctx) => CartScreen(),
           AppRoutes.ORDERS: (ctx) => OrdersScreen(),
           AppRoutes.PRODUCTS: (ctx) => ProductsScreen(),
-          AppRoutes.PRODUCTS_FORM: (ctx) => ProductFormScreen()
+          AppRoutes.PRODUCT_FORM: (ctx) => ProductFormScreen()
         },
       ),
     );

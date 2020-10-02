@@ -1,4 +1,3 @@
-import 'dart:ffi';
 import 'dart:math';
 
 import 'package:flutter/material.dart';
@@ -38,7 +37,7 @@ class Cart with ChangeNotifier {
     return total;
   }
 
-  void AddItem(Product product) {
+  void addItem(Product product) {
     if (_items.containsKey(product.id)) {
       _items.update(product.id, (existItem) {
         return CartItem(
