@@ -17,7 +17,7 @@ class Products with ChangeNotifier {
     return items.where((prod) => prod.isFavorite).toList();
   }
 
-  void AddProduct(Product product) {
+  void addProduct(Product product) {
     _items.add(Product(
       id: Random().nextDouble().toString(),
       title: product.title,
@@ -28,7 +28,7 @@ class Products with ChangeNotifier {
     notifyListeners();
   }
 
-  void UpdateProduct(Product product) {
+  void updateProduct(Product product) {
     if (product == null || product.id == null) {
       return;
     }
@@ -37,6 +37,13 @@ class Products with ChangeNotifier {
 
     if (index >= 0) {
       _items[index] = product;
+      notifyListeners();
+    }
+  }
+
+  void deleteProduct(String id) {
+    final index = _items.indexWhere((product) => product.id == id);
+    if (index >= 0) {
       notifyListeners();
     }
   }
