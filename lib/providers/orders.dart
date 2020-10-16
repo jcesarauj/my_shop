@@ -1,7 +1,6 @@
-import 'dart:math';
-
+import 'dart:convert';
 import 'package:flutter/cupertino.dart';
-
+import 'package:http/http.dart' as http;
 import 'cart.dart';
 
 class Order {
@@ -14,6 +13,8 @@ class Order {
 }
 
 class Orders with ChangeNotifier {
+  final String _baseUrl = 'https://wtisolutions.firebaseio.com/orders';
+
   List<Order> _items = [];
 
   List<Order> get items {
@@ -24,13 +25,59 @@ class Orders with ChangeNotifier {
     return _items.length;
   }
 
-  void addOrder(List<CartItem> products, double total) {
+  Future<void> loadOrders() async {
+    List<Order> loadedItens = [];
+    final response = await http.get("${_baseUrl}.json");
+    Map<String, dynamic> data = json.decode(response.body);
+    _items.clear();
+    if (data != null) {
+      data.forEach((orderId, orderData) {
+        loadedItens.add(
+          Order(
+              id: orderId,
+              total: orderData['total'],
+              date: DateTime.parse(orderData['date']),
+              products: (orderData['products'] as List<dynamic>).map((item) {
+                return CartItem(
+                  id: item['id'],
+                  title: item['title'],
+                  price: item['price'],
+                  quantity: item['quantity'],
+                  productId: item['productId'],
+                );
+              }).toList()),
+        );
+      });
+      notifyListeners();
+    }
+    _items = loadedItens.reversed.toList();
+    return Future.value();
+  }
+
+  Future<void> addOrder(List<CartItem> products, double total) async {
+    DateTime dateTime = DateTime.now();
+
+    final response = await http.post("$_baseUrl.json",
+        body: json.encode({
+          'total': total,
+          'date': dateTime.toIso8601String(),
+          'products': products
+              .map((cartItem) => {
+                    'id': cartItem.id,
+                    'productId': cartItem.productId,
+                    'title': cartItem.title,
+                    'quantity': cartItem.quantity,
+                    'price': cartItem.price
+                  })
+              .toList(),
+        }));
+
     _items.insert(
         0,
         Order(
-            id: Random().nextDouble().toString(),
+            id: json.decode(response.body)["name"],
             total: total,
-            date: DateTime.now(),
+            date: dateTime,
             products: products));
 
     notifyListeners();
