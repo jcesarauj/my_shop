@@ -21,7 +21,7 @@ class _ProductsOverviewScreenState extends State<ProductsOverviewScreen> {
   @override
   void initState() {
     super.initState();
-    Provider.of<Products>(context, listen: false).LoadProducts().then((value) {
+    Provider.of<Products>(context, listen: false).loadProducts().then((value) {
       setState(() {
         _isLoading = false;
       });

@@ -2,11 +2,12 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:shop/providers/product.dart';
+import 'package:shop/utils/constants.dart';
 
 class Products with ChangeNotifier {
   List<Product> _items = [];
   List<Product> get items => [..._items];
-  final String _baseUrl = 'https://wtisolutions.firebaseio.com/products';
+  final String _baseUrl = '${Constants.BASE_API_URL}products';
 
   int get itemsCount {
     return _items.length;
@@ -16,8 +17,8 @@ class Products with ChangeNotifier {
     return items.where((prod) => prod.isFavorite).toList();
   }
 
-  Future<void> LoadProducts() async {
-    final response = await http.get("${_baseUrl}.json");
+  Future<void> loadProducts() async {
+    final response = await http.get("$_baseUrl.json");
     Map<String, dynamic> data = json.decode(response.body);
     _items.clear();
     if (data != null) {
@@ -39,7 +40,7 @@ class Products with ChangeNotifier {
 
   Future<void> addProduct(Product product) async {
     final response = await http.post(
-      "${_baseUrl}.json",
+      "$_baseUrl.json",
       body: json.encode({
         "title": product.title,
         "description": product.description,

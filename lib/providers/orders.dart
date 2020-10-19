@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/cupertino.dart';
 import 'package:http/http.dart' as http;
+import 'package:shop/utils/constants.dart';
 import 'cart.dart';
 
 class Order {
@@ -13,7 +14,7 @@ class Order {
 }
 
 class Orders with ChangeNotifier {
-  final String _baseUrl = 'https://wtisolutions.firebaseio.com/orders';
+  final String _baseUrl = '${Constants.BASE_API_URL}orders';
 
   List<Order> _items = [];
 
@@ -27,7 +28,7 @@ class Orders with ChangeNotifier {
 
   Future<void> loadOrders() async {
     List<Order> loadedItens = [];
-    final response = await http.get("${_baseUrl}.json");
+    final response = await http.get("$_baseUrl.json");
     Map<String, dynamic> data = json.decode(response.body);
     _items.clear();
     if (data != null) {
