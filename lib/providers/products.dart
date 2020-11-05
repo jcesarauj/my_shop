@@ -8,6 +8,10 @@ class Products with ChangeNotifier {
   List<Product> _items = [];
   List<Product> get items => [..._items];
   final String _baseUrl = '${Constants.BASE_API_URL}products';
+  String _token = "";
+  String _userId = "";
+
+  Products([this._token, this._userId, this._items = const []]);
 
   int get itemsCount {
     return _items.length;
@@ -18,11 +22,17 @@ class Products with ChangeNotifier {
   }
 
   Future<void> loadProducts() async {
-    final response = await http.get("$_baseUrl.json");
+    final response = await http.get("$_baseUrl.json?auth=$_token");
+    final favoriteResponse = await http.get(
+        "${Constants.BASE_API_URL}/userFavorites/$_userId.json?auth=$_token");
+    final favoriteMap = json.decode(favoriteResponse.body);
+
     Map<String, dynamic> data = json.decode(response.body);
     _items.clear();
     if (data != null) {
       data.forEach((productId, productData) {
+        final isFavorite =
+            favoriteMap == null ? false : favoriteMap[productId] ?? false;
         _items.add(
           Product(
               id: productId,
@@ -30,7 +40,7 @@ class Products with ChangeNotifier {
               description: productData['description'],
               price: productData['price'],
               imageUrl: productData['imageUrl'],
-              isFavorite: productData['isFavorite']),
+              isFavorite: isFavorite),
         );
       });
       notifyListeners();
@@ -40,7 +50,7 @@ class Products with ChangeNotifier {
 
   Future<void> addProduct(Product product) async {
     final response = await http.post(
-      "$_baseUrl.json",
+      "$_baseUrl.json?auth=$_token",
       body: json.encode({
         "title": product.title,
         "description": product.description,
@@ -69,7 +79,7 @@ class Products with ChangeNotifier {
 
     if (index >= 0) {
       await http.patch(
-        "$_baseUrl/${product.id}.json",
+        "$_baseUrl/${product.id}.json?auth=$_token",
         body: {
           "title": product.title,
           "description": product.description,
@@ -88,7 +98,7 @@ class Products with ChangeNotifier {
     if (index >= 0) {
       final product = _items[index];
       await http.delete(
-        "$_baseUrl/${product.id}.json",
+        "$_baseUrl/${product.id}.json?auth=$_token",
       );
 
       _items.remove(product);

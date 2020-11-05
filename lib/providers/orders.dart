@@ -15,8 +15,11 @@ class Order {
 
 class Orders with ChangeNotifier {
   final String _baseUrl = '${Constants.BASE_API_URL}orders';
+  String _token;
 
   List<Order> _items = [];
+
+  Orders([this._token, this._items = const []]);
 
   List<Order> get items {
     return [..._items];
@@ -28,7 +31,7 @@ class Orders with ChangeNotifier {
 
   Future<void> loadOrders() async {
     List<Order> loadedItens = [];
-    final response = await http.get("$_baseUrl.json");
+    final response = await http.get("$_baseUrl.json?auth=$_token");
     Map<String, dynamic> data = json.decode(response.body);
     _items.clear();
     if (data != null) {
@@ -58,7 +61,7 @@ class Orders with ChangeNotifier {
   Future<void> addOrder(List<CartItem> products, double total) async {
     DateTime dateTime = DateTime.now();
 
-    final response = await http.post("$_baseUrl.json",
+    final response = await http.post("$_baseUrl.json?auth=$_token",
         body: json.encode({
           'total': total,
           'date': dateTime.toIso8601String(),
