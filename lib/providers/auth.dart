@@ -1,15 +1,18 @@
+import 'dart:async';
 import 'dart:convert';
 
 import 'package:flutter/cupertino.dart';
 
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:shop/data/store.dart';
 import 'package:shop/exceptions/auth-exception.dart';
 
 class Auth with ChangeNotifier {
   String _userId;
   String _token;
   DateTime _expireDate;
+  Timer _logoutTimer;
 
   bool get isAuth {
     return token != null;
@@ -47,10 +50,21 @@ class Auth with ChangeNotifier {
       throw AuthException(responseBody["error"]["message"]);
     } else {
       _token = responseBody["idToken"];
-      _userId = responseBody["idToken"];
+      _userId = responseBody["userId"];
       _expireDate = DateTime.now().add(Duration(
         seconds: int.parse(responseBody["expiresIn"]),
       ));
+
+      Store.saveMap(
+        "userData",
+        {
+          "token": _token,
+          "userId": _userId,
+          "expireDate": _expireDate.toIso8601String()
+        },
+      );
+
+      _timerLogout();
       notifyListeners();
     }
 
@@ -63,5 +77,51 @@ class Auth with ChangeNotifier {
 
   Future<void> login(String email, String password) async {
     return authenticate(email, password, "signInWithPassword");
+  }
+
+  Future<void> tryAutoLogin() async {
+    if (isAuth) {
+      return Future.value();
+    }
+
+    final userData = await Store.getMap('userData');
+    if (userData == null) {
+      return Future.value();
+    }
+
+    final expireDate = DateTime.parse(userData["expiryDate"]);
+
+    if (expireDate.isBefore(DateTime.now())) {
+      return Future.value();
+    }
+
+    _token = userData["token"];
+    _userId = userData["userId"];
+
+    logOut();
+    Store.remove('userData');
+    notifyListeners();
+  }
+
+  void logOut() {
+    _token = null;
+    _userId = null;
+    _expireDate = null;
+    cancelTimer();
+    notifyListeners();
+  }
+
+  void _timerLogout() {
+    cancelTimer();
+    final timeToLogOut = _expireDate.difference(DateTime.now()).inSeconds;
+    _logoutTimer = Timer(
+        Duration(
+          seconds: timeToLogOut,
+        ),
+        logOut);
+  }
+
+  void cancelTimer() {
+    if (_logoutTimer != null) _logoutTimer.cancel();
   }
 }
