@@ -10,12 +10,43 @@ class AuthCard extends StatefulWidget {
   _AuthCardState createState() => _AuthCardState();
 }
 
-class _AuthCardState extends State<AuthCard> {
+class _AuthCardState extends State<AuthCard>
+    with SingleTickerProviderStateMixin {
   GlobalKey<FormState> _form = GlobalKey();
   bool _isLoading = false;
   AuthMode _authMode = AuthMode.Login;
   final Map<String, String> _authData = {'email': '', 'password': ''};
   final _passwordController = TextEditingController();
+
+  AnimationController _animationController;
+  Animation _animationHeight;
+
+  @override
+  void initState() {
+    _animationController = AnimationController(
+        vsync: this,
+        duration: Duration(
+          milliseconds: 300,
+        ));
+
+    _animationHeight = Tween(
+            begin: Size(double.infinity, 290), end: Size(double.infinity, 371))
+        .animate(
+      CurvedAnimation(
+        parent: _animationController,
+        curve: Curves.linear,
+      ),
+    );
+
+    _animationHeight.addListener(() {
+      setState(() {});
+    });
+  }
+
+  @override
+  void dispose() {
+    _animationController.dispose();
+  }
 
   void _showErrorDialog(String message) {
     showDialog(
@@ -75,10 +106,12 @@ class _AuthCardState extends State<AuthCard> {
     if (_authMode == AuthMode.Login) {
       setState(() {
         _authMode = AuthMode.SignUp;
+        _animationController.forward();
       });
     } else {
       setState(() {
         _authMode = AuthMode.Login;
+        _animationController.reverse();
       });
     }
   }
@@ -95,7 +128,8 @@ class _AuthCardState extends State<AuthCard> {
         margin: EdgeInsets.only(bottom: 20),
         width: deviceSize.width * 0.75,
         padding: EdgeInsets.all(16.0),
-        height: _authMode == AuthMode.Login ? 270 : 320,
+        //height: _authMode == AuthMode.Login ? 270 : 320,
+        height: _animationHeight.value.height,
         child: Form(
             key: _form,
             child: Column(
