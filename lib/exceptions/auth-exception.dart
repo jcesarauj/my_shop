@@ -5,7 +5,8 @@ class AuthException implements Exception {
     "TOO_MANY_ATTEMPS_TRY_LATER": "Tente mais tarde",
     "EMAIL_NOT_FOUND": "Email não encontrado",
     "INVALID_PASSWORD": "Email ou senha inválido",
-    "USER_DISABLED": "Usuário desabilitado"
+    "USER_DISABLED": "Usuário desabilitado",
+    "INVALID_EMAIL": "Email inválido"
   };
 
   final String key;
